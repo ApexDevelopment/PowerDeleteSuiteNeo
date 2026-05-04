@@ -1133,4 +1133,19 @@ var pd = {
   ignoreErrors: false,
   debugging: false,
 };
-pd.init();
+
+(function () {
+  var ul = document.querySelector("#header-bottom-right > ul.flat-list");
+  if (!ul) return;
+  var sep = ul.nextSibling;
+  sep.parentNode.insertBefore(sep.cloneNode(true), sep.nextSibling);
+  var a = document.createElement('a');
+  a.id = 'pd-launch';
+  a.href = '#';
+  a.textContent = 'PDS';
+  a.addEventListener('click', function (e) {
+    e.preventDefault();
+    pd.init();
+  });
+  sep.parentNode.insertBefore(a, sep.nextSibling);
+}());
