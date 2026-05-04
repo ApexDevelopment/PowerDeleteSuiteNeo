@@ -234,7 +234,7 @@ var pd = {
     versions: function () {
       function checkBookmarkletVersion() {
         if (
-          typeof window.bookmarkver === "undefined" ||
+          typeof window.bookmarkver !== "undefined" &&
           window.bookmarkver !== pd.bookmarkver
         ) {
           if (
