@@ -409,6 +409,7 @@ var pd = {
     },
     createProcessStream: function () {
       window.pd_processing = true;
+      pd.ignoreErrors = false;
       pd.exportItems = [];
       pd.exportIds = [];
       pd.task = {
@@ -617,6 +618,22 @@ var pd = {
         check.date
       );
     },
+    errorConfirm: function (message, continueCallback, cancelCallback) {
+      if (pd.ignoreErrors) {
+        continueCallback();
+        return;
+      }
+      if (confirm(message)) {
+        continueCallback();
+      } else {
+        if (confirm("Would you like to ignore all future errors and continue processing?")) {
+          pd.ignoreErrors = true;
+          continueCallback();
+        } else {
+          cancelCallback();
+        }
+      }
+    },
     csvEscape: function (str) {
       return str.replace(/#/g, "%23").replace(/'/g, "`").replace(/"/g, '""');
     },
@@ -731,32 +748,20 @@ var pd = {
               }
             } else {
               pd.task.info.errors++;
-              if (
-                confirm(
-                  "Reddit seems to be under heavy load. Would you like to continue processing?"
-                )
-              ) {
-                pd.actions.page.shift();
-                pd.actions.page.handle();
-              } else {
-                pd.ui.done();
-              }
+              pd.helpers.errorConfirm(
+                "Reddit seems to be under heavy load. Would you like to continue processing?",
+                function () { pd.actions.page.shift(); pd.actions.page.handle(); },
+                function () { pd.ui.done(); }
+              );
             }
           },
           function () {
             pd.task.info.errors++;
-            if (
-              confirm(
-                "Error getting " +
-                  pd.task.paths.sections[0] +
-                  " page. Would you like to retry?"
-              )
-            ) {
-              pd.actions.page.handle();
-            } else {
-              pd.actions.page.shift();
-              pd.actions.page.next();
-            }
+            pd.helpers.errorConfirm(
+              "Error getting " + pd.task.paths.sections[0] + " page. Would you like to retry?",
+              function () { pd.actions.page.handle(); },
+              function () { pd.actions.page.shift(); pd.actions.page.next(); }
+            );
           }
         );
       },
@@ -890,18 +895,11 @@ var pd = {
             },
             function () {
               pd.task.info.errors++;
-              if (
-                confirm(
-                  "Error deleting " +
-                    (item.kind == "t3" ? "post" : "comment") +
-                    ", would you like to retry?"
-                )
-              ) {
-                pd.actions.children.handleSingle();
-              } else {
-                pd.actions.children.finishItem();
-                pd.actions.children.handleGroup();
-              }
+              pd.helpers.errorConfirm(
+                "Error deleting " + (item.kind == "t3" ? "post" : "comment") + ", would you like to retry?",
+                function () { pd.actions.children.handleSingle(); },
+                function () { pd.actions.children.finishItem(); pd.actions.children.handleGroup(); }
+              );
             }
           );
         } else {
@@ -934,16 +932,11 @@ var pd = {
             },
             function () {
               pd.task.info.errors++;
-              if (
-                !confirm(
-                  "Error editing " +
-                    (item.kind == "t3" ? "post" : "comment") +
-                    ", would you like to retry?"
-                )
-              ) {
-                item.pdEdited = true;
-              }
-              pd.actions.children.handleSingle();
+              pd.helpers.errorConfirm(
+                "Error editing " + (item.kind == "t3" ? "post" : "comment") + ", would you like to retry?",
+                function () { pd.actions.children.handleSingle(); },
+                function () { item.pdEdited = true; pd.actions.children.handleSingle(); }
+              );
             }
           );
         } else {
@@ -1113,6 +1106,7 @@ var pd = {
     return true;
   },
   performActions: true,
+  ignoreErrors: false,
   debugging: false,
 };
 pd.init();
