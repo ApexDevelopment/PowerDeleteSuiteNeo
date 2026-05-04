@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name         Power Delete Suite
-// @namespace    pds
-// @version      1.5
+// @namespace    pdsneo
+// @version      1.0
 // @description  Delete and edit Reddit posts and comments from your overview page.
-// @author       ObiDriftKenobi
-// @contributor  ApexDevelopment
+// @author       ApexDevelopment
 // @match        https://old.reddit.com/user/*/overview
 // @match        https://old.reddit.com/user/*/overview/
 // @grant        none
 // @run-at       document-end
 // ==/UserScript==
+// Fork of Power Delete Suite by /u/j0be: https://github.com/j0be/PowerDeleteSuite
 
 var pd = {
   version: GM_info.script.version,
@@ -62,21 +62,12 @@ var pd = {
         if (pd.version !== pd.prevRunVersion) {
           if (
             confirm(
-              "You've gotten the latest update! You are now running PowerDeleteSuite v" +
+              "You've gotten the latest update! You are now running PowerDeleteSuiteNeo v" +
                 pd.version +
                 ". Would you like to open the changelog in a new tab?"
             )
           ) {
-            $.ajax({ url: "/r/PowerDeleteSuite/new.json" }).then(
-              function (data) {
-                window.open(
-                  "https://reddit.com" + data.data.children[0].data.permalink
-                );
-              },
-              function () {
-                window.open("https://reddit.com/r/PowerDeleteSuite");
-              }
-            );
+            window.open("https://github.com/ApexDevelopment/PowerDeleteSuiteNeo/releases");
           }
         }
         return true;
@@ -1195,9 +1186,9 @@ b.m {
       $("#pd__central .complete .goodbye").html(
         '<hr/><h3 class="submit-bug">' +
           "<div>Having trouble?</div>" +
-          '<div><a href="https://www.reddit.com/message/compose?to=j0be&subject=PowerDeleteSuite%20Config&message=' +
+          '<div><a href="https://github.com/ApexDevelopment/PowerDeleteSuiteNeo/issues/new?body=' +
           encodeURIComponent(debugInfo) +
-          '" target="_blank">Send /u/j0be a message with your current settings.</a></div>' +
+          '" target="_blank">Open an issue on GitHub with your current settings.</a></div>' +
           "<div><small>(for privacy, subreddit list is not included)</small></div>" +
           "</h3>"
       );
@@ -1216,7 +1207,7 @@ b.m {
   },
   error: function () {
     var reset = confirm(
-      "We ran into an error. Why not tell /u/j0be what you were doing to break it?\r\n\r\nWould you like to restart the script?"
+      "We ran into an error. Consider opening an issue at https://github.com/ApexDevelopment/PowerDeleteSuiteNeo/issues\r\n\r\nWould you like to restart the script?"
     );
     window.pd_processing = false;
     if (reset) {
