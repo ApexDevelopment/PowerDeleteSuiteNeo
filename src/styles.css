@@ -1,5 +1,3 @@
-/* CSS FOR USERSCRIPT */
-
 #pd__central {
 	background: #fff;
 	border: 1px solid #ddd;
@@ -168,7 +166,7 @@ b.m {
 	max-width: none !important;
 }
 .titlebox a {
-	color: ##64b2ff;
+	color: #64b2ff;
 	text-decoration: underline;
 }
 .side {
