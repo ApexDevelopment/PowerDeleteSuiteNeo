@@ -130,19 +130,288 @@ var pd = {
       pd.setup.applyCentral();
     },
     applyStyles: function () {
-      $.ajax({
-        url: "https://raw.githubusercontent.com/mykola2312/PowerDeleteSuite/master/stylesheet.json",
-        context: $("#pd__style"),
-      }).then(
-        function (data) {
-          console.log(data);
-          $(this)[0].innerHTML = JSON.parse(data).data.stylesheet;
-          $("#pd__central").show();
-        },
-        function () {
-          alert("Error retrieving CSS from /r/PowerDeleteSuite");
-        }
-      );
+      $("#pd__style")[0].textContent = `/* CSS FOR USERSCRIPT */
+
+#pd__central {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 1em;
+    line-height: 2em;
+    margin: 20px;
+    margin-right: 320px;
+    padding: 20px;
+}
+
+.goodbye::after,
+.goodbye2::after,
+#pd__central::after {
+    content: "";
+    clear: left;
+    display: block;
+}
+
+.goodbye2 {
+    display: none;
+}
+
+.complete[style*="block"] .goodbye2 {
+    display: block;
+}
+
+.submit-bug {
+    float: left;
+    width: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.faq {
+    float: left;
+    width: 50%;
+}
+
+.faq blockquote {
+    border-left: 3px solid #09f;
+    padding-left: 1.2em;
+    margin: .5em 0;
+}
+.faq p {
+    line-height: 1.1em;
+    text-indent: 1.5em;
+}
+
+.xt {
+    display: none;
+}
+.xt:checked~.xtr-section {
+    display: block;
+}
+.xt~label::after {
+    color: #09f;
+    content: "+";
+    font-weight: bold;
+    margin-left: .2em;
+}
+.xt:checked~label::after {
+    content: "-";
+}
+.xt.xtr {
+    display: inline-block;
+}
+.ind {
+    margin-left: 1em !important;
+}
+#pd__central input[type="checkbox"] {
+    margin-right: .5em;
+    position: relative;
+    top: 3px;
+}
+b.m {
+    color: #590;
+    margin-right: .4em;
+}
+#pd__central a {
+    cursor: pointer;
+}
+.xtr-section {
+    background: #eee;
+    display: none;
+    max-height: 20em;
+    overflow-y: auto;
+    padding: .5em 1em;
+}
+#pd__central textarea {
+    min-height: 3em;
+    min-width: 200px;
+    width: 50%;
+}
+#pd__central .label {
+    display: block;
+    text-align: center;
+}
+#pd__central .progress {
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+    height: 2em;
+    margin-bottom: 1em;
+    position: relative;
+}
+#pd__central .bar,
+#pd__central .text {
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+#pd__central .bar {
+    background: #def;
+    z-index: 0;
+}
+#pd__central .text {
+    text-align: center;
+    width: 100%;
+    z-index: 1;
+}
+
+#pd__central .text::before {
+    content: attr(data-top)"/"attr(data-bottom);
+}
+
+.processing {
+    display: none;
+}
+
+.xtr-section a {
+    text-decoration: underline;
+}
+
+.xtr-section a.disabled,
+.xtr-section a.loading {
+    color: #999;
+}
+
+.gt-toggle+label {
+    cursor: pointer;
+    border-bottom: 1px dashed #333;
+}
+
+.gt-toggle+label::before {
+    content: "Less than";
+}
+.gt-toggle.greater+label::before {
+    content: "Greater than";
+}
+
+#pd__date-selector .gt-toggle+label::before {
+    content: "Older than";
+}
+#pd__date-selector .gt-toggle.greater+label::before {
+    content: "Newer than";
+}
+
+.hidden {
+    display: none;
+}
+
+/* Subreddit Style */
+
+.linkflairlabel {
+    max-width: none !important;
+}
+.titlebox a {
+    color: ##64b2ff;
+    text-decoration: underline;
+}
+.side {
+    position: relative;
+    padding-left: 20px;
+    z-index: 15;
+}
+
+.listing-page .stickied+.clearleft+.linkflair-old,
+.listing-page .stickied+.linkflair-old {
+    margin-top: 80px;
+    position: relative;
+    overflow: visible !important;
+}
+
+.listing-page .stickied+.clearleft+.linkflair-old::before,
+.listing-page .stickied+.linkflair-old::before {
+    content: "Old Versions";
+    display: block;
+    position: absolute;
+    top: -2em;
+    left: 0;
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: 1px solid;
+    width: 100%;
+}
+
+.debugging {
+    display: none;
+}
+
+.progress__byline {
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 2em;
+}
+
+.progress__byline .row {
+    display: table-row;
+    width: 100%;
+}
+
+.progress__byline .row .type {
+    display: none;
+    border-top: 1px solid #ccc;
+    text-align: center;
+    font-size: 10px;
+}
+
+.progress__byline .row .type.visible {
+    display: table-cell;
+}
+
+.progress__byline .row .type .num::before {
+    content: attr(data-num);
+}
+
+.progress__byline .num {
+    display: block;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.progress__byline .ignored .reasons {
+    margin: 0;
+    padding: 0;
+    line-height: 1em;
+    color: #999;
+}
+.progress__byline .ignored .reasons *::after {
+    content: attr(data-num);
+}
+
+#progress__item-output.onecol > div {
+    width: 100%;
+}
+
+#progress__item-output.twocol > div {
+    float: left;
+    width: 50%;
+}
+
+#progress__item-output::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+#progress__item-output a {
+    display: block;
+}
+
+#pd__central hr {
+    margin: 2em 0 1em;
+}
+
+.export-button {
+    display: block;
+    width: 250px;
+    text-align: center;
+    background: #09f;
+    color: #fff;
+    font-size: 14px;
+    padding: 5px;
+    margin: 0 auto;
+    border-radius: 4px;
+    font-weight: bold;
+}`;
+      $("#pd__central").show();
     },
     applyCentral: function () {
       $.ajax({
