@@ -165,6 +165,7 @@ var pd = {
 		createProcessStream: function () {
 			window.pd_processing = true;
 			pd.ignoreErrors = false;
+			pd.skipIds = new Set();
 			pd.exportItems = [];
 			pd.exportIds = [];
 			pd.task = {
@@ -323,6 +324,10 @@ var pd = {
 			return { valid: true, reason: "valid" };
 		},
 		shouldBeActedOn: function (item) {
+			if (pd.filters.skip.enabled && pd.skipIds.has(item.data.id)) {
+				pd.task.info.ignoreReasons.skip++;
+				return false;
+			}
 			var check = {
 				subs:
 					!pd.filters.subs.enabled ||
@@ -349,6 +354,7 @@ var pd = {
 			}
 			var passes = check.subs && check.gold && check.saved && check.mod && check.score && check.date;
 			if (passes && pd.filters.skip.enabled && pd.task.info.actionIndex++ < pd.filters.skip.num) {
+				pd.skipIds.add(item.data.id);
 				pd.task.info.ignoreReasons.skip++;
 				return false;
 			}

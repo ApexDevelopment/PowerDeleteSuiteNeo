@@ -97,9 +97,7 @@ var pd = {
 			pd.setup.applyCentral();
 		},
 		applyStyles: function () {
-			$("#pd__style")[0].textContent = `/* CSS FOR USERSCRIPT */
-
-#pd__central {
+			$("#pd__style")[0].textContent = `#pd__central {
 	background: #fff;
 	border: 1px solid #ddd;
 	border-radius: 1em;
@@ -267,7 +265,7 @@ b.m {
 	max-width: none !important;
 }
 .titlebox a {
-	color: ##64b2ff;
+	color: #64b2ff;
 	text-decoration: underline;
 }
 .side {
@@ -533,6 +531,7 @@ b.m {
 		createProcessStream: function () {
 			window.pd_processing = true;
 			pd.ignoreErrors = false;
+			pd.skipIds = new Set();
 			pd.exportItems = [];
 			pd.exportIds = [];
 			pd.task = {
@@ -691,6 +690,10 @@ b.m {
 			return { valid: true, reason: "valid" };
 		},
 		shouldBeActedOn: function (item) {
+			if (pd.filters.skip.enabled && pd.skipIds.has(item.data.id)) {
+				pd.task.info.ignoreReasons.skip++;
+				return false;
+			}
 			var check = {
 				subs:
 					!pd.filters.subs.enabled ||
@@ -717,6 +720,7 @@ b.m {
 			}
 			var passes = check.subs && check.gold && check.saved && check.mod && check.score && check.date;
 			if (passes && pd.filters.skip.enabled && pd.task.info.actionIndex++ < pd.filters.skip.num) {
+				pd.skipIds.add(item.data.id);
 				pd.task.info.ignoreReasons.skip++;
 				return false;
 			}
