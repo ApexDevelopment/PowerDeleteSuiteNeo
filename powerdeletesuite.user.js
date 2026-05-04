@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Power Delete Suite
 // @namespace    pds
-// @version      2
+// @version      1.4.11
 // @description  Delete and edit Reddit posts and comments from your overview page.
 // @author       ObiDriftKenobi
 // @match        https://old.reddit.com/user/*/overview
@@ -11,7 +11,7 @@
 // ==/UserScript==
 
 var pd = {
-  version: "1.4.11",
+  version: GM_info.script.version,
   bookmarkver: "1.4",
   editStrings: [
     "I love ice cream.",
