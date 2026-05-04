@@ -4,11 +4,11 @@ A fork of [Power Delete Suite by /u/j0be](https://github.com/j0be/PowerDeleteSui
 
 ## What's different
 
-- Single file install. No bookmarklet, no runtime GitHub fetches — everything is bundled into `powerdeletesuite.user.js` at build time.
+- Single file install. No runtime GitHub fetches or bookmarklet. Everything is bundled into `powerdeletesuite.user.js` at build time.
 - Works whether your overview URL ends in `/overview` or `/overview/`.
 - A skip filter lets you skip the N most recent items before any edits or deletions begin. Found under the date filter in the UI.
 - On API errors, you're prompted once per run. If you cancel, you get the option to silently ignore all future errors and keep processing.
-- 429 rate-limit responses are retried automatically with exponential backoff (2s, 4s, 8s … up to 64s).
+- 429 rate-limit responses are retried automatically with exponential backoff (2s, 4s, 8s, and so on up to 64s).
 - When editing without custom replacement text, posts are overwritten with six random words followed by "This post has been redacted."
 
 ## Installation
@@ -19,7 +19,7 @@ A fork of [Power Delete Suite by /u/j0be](https://github.com/j0be/PowerDeleteSui
 ## Usage
 
 1. Go to your [account overview](https://old.reddit.com/u/me/overview).
-2. Click the **PDS** link in the top nav bar.
+2. Click the **PDS** link in the top right nav bar.
 3. Adjust settings and go.
 
 ## Bugs / Issues
