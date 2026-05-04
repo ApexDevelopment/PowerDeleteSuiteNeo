@@ -359,6 +359,7 @@ var pd = {
             .first()
             .text("Power Delete Suite v" + pd.version);
           pd.setup.applySubList();
+          pd.setup.applySkipFilter();
           pd.setup.bindUI();
           pd.helpers.restoreSettings();
         },
@@ -366,6 +367,14 @@ var pd = {
           alert("Error retrieving markup from /r/PowerDeleteSuite");
         }
       );
+    },
+    applySkipFilter: function () {
+      $('<div>' +
+        '<input type="checkbox" id="pd__skip" name="pd__skip" />' +
+        '<label for="pd__skip"> Skip first </label>' +
+        '<input type="text" id="pd__skip-num" class="ind num-only" name="pd__skip-num" />' +
+        '<label for="pd__skip-num"> posts/comments</label>' +
+        '</div>').insertAfter($("#pd__date").parent());
     },
     applySubList: function () {
       var sub_arr = [],
@@ -431,6 +440,7 @@ var pd = {
           errors: 0,
           ignored: 0,
           exported: 0,
+          actionIndex: 0,
           ignoreReasons: {
             subs: 0,
             gold: 0,
@@ -438,6 +448,7 @@ var pd = {
             mod: 0,
             score: 0,
             date: 0,
+            skip: 0,
           },
         },
         config: {
@@ -486,6 +497,10 @@ var pd = {
         gilded: $("#pd__gilded").is(":checked"),
         saved: $("#pd__saved").is(":checked"),
         mod: $("#pd__mod").is(":checked"),
+        skip: {
+          enabled: $("#pd__skip").is(":checked"),
+          num: parseInt($("#pd__skip-num").val(), 10) || 0,
+        },
       };
     },
     resetSorts: function () {
@@ -609,14 +624,12 @@ var pd = {
           pd.task.items[0].pdIgnoreReasons = check;
         }
       }
-      return (
-        check.subs &&
-        check.gold &&
-        check.saved &&
-        check.mod &&
-        check.score &&
-        check.date
-      );
+      var passes = check.subs && check.gold && check.saved && check.mod && check.score && check.date;
+      if (passes && pd.filters.skip.enabled && pd.task.info.actionIndex++ < pd.filters.skip.num) {
+        pd.task.info.ignoreReasons.skip++;
+        return false;
+      }
+      return passes;
     },
     errorConfirm: function (message, continueCallback, cancelCallback) {
       if (pd.ignoreErrors) {
