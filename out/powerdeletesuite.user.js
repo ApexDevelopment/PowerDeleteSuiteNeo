@@ -627,7 +627,9 @@ b.m {
 				if (validation.valid) {
 					$("#pd__central .complete, #pd__form").hide();
 					$("#pd__central .processing").show();
-					pd.actions.page.next();
+					pd.actions.prefetchSkipIds(function () {
+						pd.actions.page.next();
+					});
 				} else {
 					alert(validation.reason);
 				}
@@ -725,6 +727,25 @@ b.m {
 				return false;
 			}
 			return passes;
+		},
+		passesFilters: function (item) {
+			return (
+				(!pd.filters.subs.enabled ||
+					$.inArray(item.data.subreddit, pd.filters.subs.list) >= 0) &&
+				!(pd.filters.gilded && item.data.gilded == 1) &&
+				!(pd.filters.saved && item.data.saved == true) &&
+				!(pd.filters.mod && item.data.distinguished != null) &&
+				(!pd.filters.score.enabled ||
+					(pd.filters.score.gt === true &&
+						parseFloat(item.data.score) > pd.filters.score.num) ||
+					(pd.filters.score.gt === false &&
+						parseFloat(item.data.score) < pd.filters.score.num)) &&
+				(!pd.filters.date.enabled ||
+					(pd.filters.date.gt === true &&
+						parseFloat(item.data.created_utc) > pd.filters.date.num) ||
+					(pd.filters.date.gt === false &&
+						parseFloat(item.data.created_utc) < pd.filters.date.num))
+			);
 		},
 		errorConfirm: function (message, continueCallback, cancelCallback) {
 			if (pd.ignoreErrors) {
@@ -891,6 +912,114 @@ b.m {
 		},
 	},
 	actions: {
+		prefetchSkipIds: function (callback) {
+			if (!pd.filters.skip.enabled || pd.filters.skip.num <= 0) {
+				callback();
+				return;
+			}
+			var N = pd.filters.skip.num;
+			var sections = pd.task.paths.sections.slice();
+			var sectionState = {};
+			sections.forEach(function (s) {
+				sectionState[s] = { after: "", done: false, oldestFetched: Infinity };
+			});
+			var seen = {};
+			var qualifyingItems = [];
+
+			function fetchOne(section, attempt) {
+				attempt = attempt || 0;
+				var state = sectionState[section];
+				var deferred = $.Deferred();
+				$.ajax({
+					url: pd.endpoints[section],
+					data: {
+						q:
+							section == "search"
+								? "author:" +
+									pd.config.user +
+									(!pd.task.config.isRemovingPosts && !pd.task.config.isExporting
+										? " self:1"
+										: "")
+								: null,
+						after: state.after,
+						sort: "new",
+						t: "all",
+					},
+				}).then(
+					function (data) {
+						if (!data || !data.data || data.data.children.length === 0) {
+							state.done = true;
+						} else {
+							var children = data.data.children;
+							state.after = children[children.length - 1].data.name;
+							state.oldestFetched = children[children.length - 1].data.created_utc;
+							children.forEach(function (item) {
+								if (!seen[item.data.id] && pd.helpers.passesFilters(item)) {
+									seen[item.data.id] = true;
+									qualifyingItems.push({
+										id: item.data.id,
+										created_utc: item.data.created_utc,
+									});
+								}
+							});
+						}
+						deferred.resolve();
+					},
+					function (jqXHR) {
+						if (jqXHR.status === 429 && attempt < 6) {
+							setTimeout(function () {
+								fetchOne(section, attempt + 1).then(deferred.resolve, deferred.reject);
+							}, Math.min(Math.pow(2, attempt + 1) * 1000, 64000));
+						} else {
+							state.done = true;
+							deferred.resolve();
+						}
+					},
+				);
+				return deferred.promise();
+			}
+
+			function round() {
+				var pending = sections.filter(function (s) {
+					return !sectionState[s].done;
+				});
+				if (pending.length === 0) {
+					finish();
+					return;
+				}
+				$.when.apply(
+					$,
+					pending.map(function (s) {
+						return fetchOne(s);
+					}),
+				).then(function () {
+					qualifyingItems.sort(function (a, b) {
+						return b.created_utc - a.created_utc;
+					});
+					if (qualifyingItems.length >= N) {
+						var cutoff = qualifyingItems[N - 1].created_utc;
+						var allPastCutoff = sections.every(function (s) {
+							return sectionState[s].done || sectionState[s].oldestFetched <= cutoff;
+						});
+						if (allPastCutoff) {
+							finish();
+							return;
+						}
+					}
+					round();
+				});
+			}
+
+			function finish() {
+				qualifyingItems.slice(0, N).forEach(function (item) {
+					pd.skipIds.add(item.id);
+				});
+				pd.task.info.actionIndex = N;
+				callback();
+			}
+
+			round();
+		},
 		page: {
 			next: function () {
 				if (pd.debugging && pd.task.info.donePages % 5 == 3) {
