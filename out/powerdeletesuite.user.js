@@ -13,7 +13,6 @@
 
 var pd = {
 	version: GM_info.script.version,
-	bookmarkver: "1.4",
 	init: function () {
 		pd.checks.versions();
 		if (window.pd_processing !== true) {
@@ -35,22 +34,6 @@ var pd = {
 	},
 	checks: {
 		versions: function () {
-			function checkBookmarkletVersion() {
-				if (typeof window.bookmarkver !== "undefined" && window.bookmarkver !== pd.bookmarkver) {
-					if (
-						confirm(
-							"There's been an update to the bookmarklet. Would you like to go to the Github repo in order to get the latest version?",
-						)
-					) {
-						alert(
-							'Sadly, there]\'s no way to automatically update the bookmark. :/\nScroll down to the "Install PowerDeleteSuite" button on the github page. Replace your CURRENT bookmark with the one found there to install the latest bookmark.',
-						);
-						document.location.href = "https://github.com/j0be/PowerDeleteSuite";
-						return false;
-					}
-				}
-				return true;
-			}
 			function checkAppVersion() {
 				pd.prevRunVersion = localStorage.getItem("pd_ver") ? localStorage.getItem("pd_ver") : "0";
 				localStorage.setItem("pd_ver", pd.version);
@@ -67,7 +50,7 @@ var pd = {
 				}
 				return true;
 			}
-			return pd.debugging || (checkBookmarkletVersion() && checkAppVersion());
+			return pd.debugging || checkAppVersion();
 		},
 		location: function () {
 			return (
