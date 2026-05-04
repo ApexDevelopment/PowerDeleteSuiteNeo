@@ -1,0 +1,88 @@
+<h2>Power Delete Suite</h2>
+<form id="pd__form">
+  <p>
+    Please review all options before pressing "Process". This process is <b>NOT</b> reversible.
+  </p>
+  <hr/>
+  
+  <h3>Actions to perform</h3>
+  <div><input checked type="checkbox" id="pd__export" name="pd__export"><label for="pd__export">Prepare local backup of items</label></div>
+  <div><input checked type="checkbox" id="pd__submissions" name="pd__submissions"><label for="pd__submissions">Remove submissions</label></div>
+  <div><input checked type="checkbox" id="pd__comments" name="pd__comments"><label for="pd__comments">Remove comments</label></div>
+  <div data-help="If editing is enabled at the same time as deleting, the item will be edited BEFORE deleting it.">
+    <input class="xt xtr" type="checkbox" id="pd__comments-edit" name="pd__comments-edit"><label for="pd__comments-edit">Edit comments / self posts</label><a class="pd__q">?</a>
+    <div id="edit-form" class="xt xtr-section">
+      <textarea placeholder="Enter text to edit comments or self posts to." id="pd__comments-edit-text" name="pd__comments-edit-text"></textarea>
+    </div>
+  </div>
+  <hr/>
+
+  <h3>Filters</h3>
+  <div>
+    <input class="xt xtr" type="checkbox" id="pd__subreddits" name="pd__subreddits"><label for="pd__subreddits">Filter by subreddits</label>
+    <div id="pd__sub-list" class="xt xtr-section">
+      <b>Perform actions on any subreddit that is checked:</b>
+    </div>
+  </div>
+  <div>
+    <input class="xt xtr" type="checkbox" id="pd__score" name="pd__score"><label for="pd__score">Filter by score</label>
+    <div id="pd__score-selector" class="xtr-section">
+      <div><b>Perform actions on items with a score:</b></div>
+      <input class="gt-toggle hidden greater" id="pd__score-dirtoggle" name="pd__score-dirtoggle" type="checkbox" checked /><label for="pd__score-dirtoggle" title="toggle"></label> <input id="pd__score-num" type="tel" placeholder="200" name="pd__score-num" class="num-only"/>
+    </div>
+  </div>
+  <div>
+    <input class="xt xtr" type="checkbox" id="pd__date" name="pd__date"><label for="pd__date">Filter by date</label>
+    <div id="pd__date-selector" class="xtr-section">
+      <div><b>Perform actions on items with a date time:</b></div>
+      <input class="gt-toggle hidden greater" id="pd__date-dirtoggle" name="pd__date-dirtoggle" type="checkbox" checked /><label for="pd__date-dirtoggle" title="toggle"></label> <input id="pd__date-num" type="tel" placeholder="60" value="60" name="pd__date-num" class="num-only"/> <span>minutes ago</span>
+       <div>Set to: <a class="pd__insert" data-target="#pd__date-num" data-value="60">1 hour</a>
+       <a class="pd__insert" data-target="#pd__date-num" data-value="1440">1 day</a>
+       <a class="pd__insert" data-target="#pd__date-num" data-value="10080">1 week</a>
+       <a class="pd__insert" data-target="#pd__date-num" data-value="43200">30 days</a>
+       <a class="pd__insert" data-target="#pd__date-num" data-value="262800">half year</a>
+       <a class="pd__insert" data-target="#pd__date-num" data-value="525600">year</a></div>
+    </div>
+  </div>
+  <div><input checked type="checkbox" id="pd__gilded" name="pd__gilded"><label for="pd__gilded">Do not perform actions on gilded</label></div>
+  <div><input checked type="checkbox" id="pd__saved" name="pd__saved"><label for="pd__saved">Do not perform actions on saved</label></div>
+  <div><input checked type="checkbox" id="pd__mod" name="pd__mod"><label for="pd__mod">Do not perform actions on mod distinguished</label></div>
+  <hr/>
+  <div>
+    <button>Process</button><input checked type="checkbox" id="pd__remember" name="pd__remember" class="ind"><label for="pd__remember" data-help="This will store data on your local computer. It will NOT transmit any of this data.">Remember Settings<a class="pd__q">?</a></label>
+  </div>
+</form>
+
+
+<div class="processing">
+  <span class="label">Page Progress</span>
+  <div id="progress_page" class="progress">
+    <span class="bar"></span>
+    <span class="text" data-top="" data-bottom=""></span>
+  </div>
+  <span class="label">Page Item Progress</span>
+  <div id="progress_item" class="progress">
+    <span class="bar"></span>
+    <span class="text" data-top="" data-bottom=""></span>
+  </div>
+  <div class="progress__byline"><div class="row">
+     <span class="type errors"><span class="num" data-num=""></span> errors</span>
+     <span class="type exported"><span class="num" data-num=""></span> exported</span>
+     <span class="type edited"><span class="num" data-num=""></span> edited</span>
+     <span class="type deleted"><span class="num" data-num=""></span> deleted</span>
+     <span class="type ignored"><span class="num" data-num=""></span> ignored<span class="reasons"></span></span>
+  </div></div>
+</div>
+
+
+<div class="complete">
+  <div class="summary"></div>
+  <div class="progress__byline"><div class="row">
+     <span class="type errors"><span class="num" data-num=""></span> errors</span>
+     <span class="type exported"><span class="num" data-num=""></span> exported</span>
+     <span class="type edited"><span class="num" data-num=""></span> edited</span>
+     <span class="type deleted"><span class="num" data-num=""></span> deleted</span>
+     <span class="type ignored"><span class="num" data-num=""></span> ignored<span class="reasons"></span></span>
+  </div></div>
+  <div class="goodbye"></div>
+</div>
