@@ -5,6 +5,7 @@
 // @description  Delete and edit Reddit posts and comments from your overview page.
 // @author       ObiDriftKenobi
 // @match        https://old.reddit.com/user/*/overview
+// @match        https://old.reddit.com/user/*/overview/
 // @grant        none
 // @run-at       document-end
 // ==/UserScript==
