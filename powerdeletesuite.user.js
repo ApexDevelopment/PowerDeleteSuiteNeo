@@ -162,6 +162,7 @@ var pd = {
             .text("Power Delete Suite v" + pd.version);
           pd.setup.applySubList();
           pd.setup.applySkipFilter();
+          $("#pd__comments-edit-text").attr("placeholder", "leave blank for random text");
           pd.setup.bindUI();
           pd.helpers.restoreSettings();
         },
