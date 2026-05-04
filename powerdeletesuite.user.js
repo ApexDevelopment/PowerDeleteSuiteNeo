@@ -738,7 +738,8 @@ var pd = {
         }
         return true;
       },
-      handle: function () {
+      handle: function (attempt) {
+        attempt = attempt || 0;
         pd.task.pageCalls++;
         $.ajax({
           url: pd.endpoints[pd.task.paths.sections[0]],
@@ -780,13 +781,17 @@ var pd = {
               );
             }
           },
-          function () {
-            pd.task.info.errors++;
-            pd.helpers.errorConfirm(
-              "Error getting " + pd.task.paths.sections[0] + " page. Would you like to retry?",
-              function () { pd.actions.page.handle(); },
-              function () { pd.actions.page.shift(); pd.actions.page.next(); }
-            );
+          function (jqXHR) {
+            if (jqXHR.status === 429) {
+              setTimeout(function () { pd.actions.page.handle(attempt + 1); }, Math.min(Math.pow(2, attempt + 1) * 1000, 64000));
+            } else {
+              pd.task.info.errors++;
+              pd.helpers.errorConfirm(
+                "Error getting " + pd.task.paths.sections[0] + " page. Would you like to retry?",
+                function () { pd.actions.page.handle(); },
+                function () { pd.actions.page.shift(); pd.actions.page.next(); }
+              );
+            }
           }
         );
       },
@@ -901,7 +906,8 @@ var pd = {
         }
       },
     },
-    delete: function (item) {
+    delete: function (item, attempt) {
+      attempt = attempt || 0;
       setTimeout(() => {
         if (pd.performActions) {
           $.ajax({
@@ -918,13 +924,17 @@ var pd = {
               pd.task.items[0].pdDeleted = true;
               pd.actions.children.handleSingle();
             },
-            function () {
-              pd.task.info.errors++;
-              pd.helpers.errorConfirm(
-                "Error deleting " + (item.kind == "t3" ? "post" : "comment") + ", would you like to retry?",
-                function () { pd.actions.children.handleSingle(); },
-                function () { pd.actions.children.finishItem(); pd.actions.children.handleGroup(); }
-              );
+            function (jqXHR) {
+              if (jqXHR.status === 429) {
+                setTimeout(function () { pd.actions.delete(item, attempt + 1); }, Math.min(Math.pow(2, attempt + 1) * 1000, 64000));
+              } else {
+                pd.task.info.errors++;
+                pd.helpers.errorConfirm(
+                  "Error deleting " + (item.kind == "t3" ? "post" : "comment") + ", would you like to retry?",
+                  function () { pd.actions.children.handleSingle(); },
+                  function () { pd.actions.children.finishItem(); pd.actions.children.handleGroup(); }
+                );
+              }
             }
           );
         } else {
@@ -932,9 +942,10 @@ var pd = {
           pd.task.after = pd.task.items[0].data.name;
           pd.actions.children.handleSingle();
         }
-      }, 5000);
+      }, attempt === 0 ? 5000 : 0);
     },
-    edit: function (item) {
+    edit: function (item, attempt) {
+      attempt = attempt || 0;
       setTimeout(() => {
         if (pd.performActions) {
           var editString = pd.task.config.editText ||
@@ -955,20 +966,24 @@ var pd = {
               pd.task.items[0].pdEdited = true;
               pd.actions.children.handleSingle();
             },
-            function () {
-              pd.task.info.errors++;
-              pd.helpers.errorConfirm(
-                "Error editing " + (item.kind == "t3" ? "post" : "comment") + ", would you like to retry?",
-                function () { pd.actions.children.handleSingle(); },
-                function () { item.pdEdited = true; pd.actions.children.handleSingle(); }
-              );
+            function (jqXHR) {
+              if (jqXHR.status === 429) {
+                setTimeout(function () { pd.actions.edit(item, attempt + 1); }, Math.min(Math.pow(2, attempt + 1) * 1000, 64000));
+              } else {
+                pd.task.info.errors++;
+                pd.helpers.errorConfirm(
+                  "Error editing " + (item.kind == "t3" ? "post" : "comment") + ", would you like to retry?",
+                  function () { pd.actions.children.handleSingle(); },
+                  function () { item.pdEdited = true; pd.actions.children.handleSingle(); }
+                );
+              }
             }
           );
         } else {
           pd.task.items[0].pdEdited = true;
           pd.actions.children.handleSingle();
         }
-      }, 5000);
+      }, attempt === 0 ? 5000 : 0);
     },
   },
   ui: {
