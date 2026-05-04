@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         Power Delete Suite
 // @namespace    pds
-// @version      1.4.11
+// @version      1.5
 // @description  Delete and edit Reddit posts and comments from your overview page.
 // @author       ObiDriftKenobi
+// @contributor  ApexDevelopment
 // @match        https://old.reddit.com/user/*/overview
 // @match        https://old.reddit.com/user/*/overview/
 // @grant        none
