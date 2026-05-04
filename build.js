@@ -53,14 +53,16 @@ async function build() {
 	}
 
 	const styles = fs.readFileSync(path.join(__dirname, "src", "styles.css"), "utf8");
-	const template = fs.readFileSync(path.join(__dirname, "src", "powerdeletesuite.user.js"), "utf8");
+	const template = fs.readFileSync(path.join(__dirname, "src", "main.js"), "utf8");
 
 	const output = template
 		.replace("`__STYLES__`", "`" + escapeForTemplateLiteral(styles) + "`")
 		.replace("`__CENTRALFORM__`", "`" + escapeForTemplateLiteral(centralform) + "`");
 
-	fs.writeFileSync(path.join(__dirname, "powerdeletesuite.user.js"), output, "utf8");
-	console.log("Built powerdeletesuite.user.js");
+	const outDir = path.join(__dirname, "out");
+	if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
+	fs.writeFileSync(path.join(outDir, "powerdeletesuite.user.js"), output, "utf8");
+	console.log("Built out/powerdeletesuite.user.js");
 }
 
 build().catch((err) => {
